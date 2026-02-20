@@ -28,6 +28,7 @@ export function collectFormData() {
     // --- NEW: Education Record ---
     education: {
       school: document.getElementById("e-school").value,
+      year: document.getElementById("e-year").value,
       grade: document.getElementById("e-grade").value,
       status: document.getElementById("e-status").value,
     },
@@ -207,6 +208,7 @@ export function loadChildIntoForm(index) {
 
   if (child.education) {
     document.getElementById("e-school").value = child.education.school || "";
+    document.getElementById("e-year").value = child.education.year || "";
     document.getElementById("e-grade").value = child.education.grade || "";
     document.getElementById("e-status").value = child.education.status || "";
   }
