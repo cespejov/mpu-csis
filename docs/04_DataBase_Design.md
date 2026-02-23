@@ -4,9 +4,39 @@
 
 The system uses a relational database model implemented in MySQL to ensure transactional consistency, referential integrity, and optimized data access.
 
-The schema follows a hierarchical structure:
+The database follows a relational schema organized into domain-centered aggregates.
 
-Household → Family → Person → (Child / Guardian)
+Core Hierarchy
+-Household
+--Family
+---Person
+----Child
+----Guardian
+
+Household Structural Domain
+--Household_Type
+--Tenure
+--Dwelling
+---Construction_Material
+--Household_Service
+---Service
+
+Person Economic Domain
+-Economy
+--Economy_Expense
+---Expense_Type
+
+Child Development Domain
+-Education
+-Health_Record
+--Health_Lifestyle
+--Health_Nutrition
+--Health_Record_Disease
+---Disease
+
+Relationship Tables
+
+Child_Guardian (Many-to-Many between Child and Guardian)
 
 The database is normalized to Third Normal Form (3NF) to eliminate redundancy and maintain data integrity across socio-economic, health, and education records.
 
@@ -32,16 +62,103 @@ Represents a physical socio-economic housing unit.
 Attributes:
 
 - household_id (PK)
-- address
-- income_level
-- housing_type
-- utilities_access
+- household_type_id (FK → Household_type)
+- tenure_id (FK → Ternure)
+- dwelling_id (FK → Dwelling)
+- person_per_bed
+- household_status_result
 - created_at
 - updated_at
 
 Relationship:
 
 - One Household → Many Families
+- One Household → Many Household_Services
+- One Household → One Dwelling
+
+### 3.1.1 Dwelling
+
+Represents housing characteristics.
+
+Attributes:
+
+- dwelling_id (PK)
+- construction_material_id (FK → Construction_Material)
+- address
+- city
+- geo_location
+- rooms
+- bedrooms
+- ventilation
+- year_built
+
+Relationship:
+
+- One Household → One Dwelling
+
+### 3.1.1.1 Construction_Material
+
+Lookup table for housing material classification.
+
+Attributes:
+
+- construction_material_id (PK)
+- material_name
+
+---
+
+### 3.1.2 Household_Service
+
+Junction table for services available to a household.
+
+Attributes:
+
+- household_service_id (PK)
+- household_id (FK)
+- service_id (FK)
+- availability_status
+- access_type
+- quality_level
+
+UNIQUE (household_id, service_id)
+
+---
+
+### 3.1.2.1 Service
+
+Lookup table for available services.
+
+Attributes:
+
+- service_id (PK)
+- service_name
+  (e.g., Electricity, Internet, Water, Gas)
+
+---
+
+### 3.1.3 Household_Type
+
+Lookup table describing family structure.
+
+Attributes:
+
+- household_type_id (PK)
+- type_name
+  (e.g., Nuclear, Extended, Single-parent)
+- description
+
+---
+
+### 3.1.4 Tenure
+
+Represents property ownership status.
+
+Attributes:
+
+- tenure_id (PK)
+- tenure_type
+  (e.g., Owned, Rented, Informal, Temporary)
+- description
 
 ---
 
@@ -89,13 +206,13 @@ Attributes:
 
 Relationship:
 
-- One Person → One Role (Child or Guardian)
-
-This structure avoids duplication of demographic data.
+- One Person → May be Child
+- One Person → May be Guardian
+- One Person → Many Economy Records
 
 ---
 
-### 3.4 Child
+### 3.3.1 Child
 
 Represents a child enrolled in the program.
 
@@ -110,11 +227,11 @@ Relationships:
 
 - One Child → Many Health Records
 - One Child → Many Education Records
-- One Child ↔ Many Guardians (via junction table)
+- One Child ↔ Many Guardians (via Child_Guardian junction table)
 
 ---
 
-### 3.5 Guardian
+### 3.3.2 Guardian
 
 Represents an adult responsible for a child.
 
@@ -131,7 +248,7 @@ Relationship:
 
 ---
 
-### 3.6 Child_Guardian (Junction Table)
+### 3.3.3 Child_Guardian (Junction Table)
 
 Implements the many-to-many relationship.
 
@@ -147,7 +264,9 @@ Composite Primary Key:
 
 ---
 
-### 3.7 Health_Record
+### Child Development
+
+### 3.4 Health_Record
 
 Stores historical child health metrics.
 
@@ -155,14 +274,15 @@ Attributes:
 
 - health_record_id (PK)
 - child_id (FK → Child)
-- record_date
 - weight
 - height
-- muac_score
-- bmi
 - weight_status
+- muac_score
+- violence
+- bmi
 - health_status_result
 - created_at
+- updated_at
 
 Relationship:
 
@@ -174,143 +294,102 @@ Policy:
 
 ---
 
-### 3.8 Education_Record
+### 3.4.1 Health_LifeStyle
+
+Attributes:
+
+- lifestyle_id (PK)
+- health_record_id (FK)
+- hobby
+- habit
+
+---
+
+### 3.4.2 Disease
+
+Attributes:
+
+- disease_id (PK)
+- disease_name
+- disease_type
+
+---
+
+### 3.4.3 Health_Record_Disease (Junction Table)
+
+Implements the many-to-many relationship.
+
+Attributes:
+
+- health_record_id (PK, FK)
+- disease_id (PK, FK)
+
+Composite Primary Key:
+(health_record_id, disease_id)
+
+---
+
+### 3.5 Education_Record
 
 Stores educational history.
 
 Attributes:
 
 - education_id (PK)
-- child_id (FK → Child)
-- school_name
-- grade_level
-- attendance_rate
-- academic_performance
+- child_id (FK)
 - academic_year
+- performance_level
+- conduct
+- attendance
+- socialization
+- Bullying
+- social_treatment
+- observation
+- education_status_result
+- education_date
 - created_at
+- updated_at
 
 Relationship:
 
 - One Child → Many Education Records
 
-## 3.9 Socio-Economic Domain Tables
+## Socio-Economic Domain Tables
 
-To support comprehensive household socio-economic assessment, additional domain tables are implemented.
-
----
-
-### 3.9.1 Dwelling
-
-Represents housing characteristics.
-
-Attributes:
-
-- dwelling_id (PK)
-- household_id (FK → Household)
-- construction_material_id (FK → Construction_Material)
-- household_type_id (FK → Household_Type)
-- tenure_id (FK → Tenure)
-- number_of_rooms
-- sanitation_type
-- water_source
-
-Relationship:
-
-- One Household → One Dwelling
+To support comprehensive socio-economic assessment
 
 ---
 
-### 3.9.2 Construction_Material
+### 3.6 Economy
 
-Lookup table for housing material classification.
-
-Attributes:
-
-- construction_material_id (PK)
-- material_name
-
----
-
-### 3.9.3 Household_Service
-
-Junction table for services available to a household.
-
-Attributes:
-
-- household_id (FK → Household)
-- service_id (FK → Service)
-
-Composite Primary Key:
-(household_id, service_id)
-
----
-
-### 3.9.4 Service
-
-Lookup table for available services.
-
-Attributes:
-
-- service_id (PK)
-- service_name
-  (e.g., Electricity, Internet, Water, Gas)
-
----
-
-### 3.9.5 Household_Type
-
-Lookup table describing family structure.
-
-Attributes:
-
-- household_type_id (PK)
-- type_name
-  (e.g., Nuclear, Extended, Single-parent)
-
----
-
-### 3.9.6 Tenure
-
-Represents property ownership status.
-
-Attributes:
-
-- tenure_id (PK)
-- tenure_type
-  (e.g., Owned, Rented, Informal, Temporary)
-
----
-
-### 3.9.7 Economy
-
-Represents economic profile of a household.
+Represents economic profile of a person.
 
 Attributes:
 
 - economy_id (PK)
-- household_id (FK → Household)
-- total_income
-- income_source
-- employment_status
-- last_updated
+- person_id (FK)
+- individual_income
+- economy_date
+- economy_status_result
+- created_at
+- updated_at
 
 Relationship:
 
-- One Household → One Economy Profile
+- One Person → Many Economy Records
+- One Economy → Many Expenses
 
 ---
 
-### 3.9.8 Economy_Expense
+### 3.6.1 Economy_Expense
 
-Tracks household expenses.
+Tracks person-level expenses.
 
 Attributes:
 
-- expense_id (PK)
-- economy_id (FK → Economy)
-- expense_type_id (FK → Expense_Type)
+- economy_id (PK, FK)
+- expense_type_id (PK, FK)
 - amount
-- frequency
 
 Relationship:
 
@@ -318,7 +397,7 @@ Relationship:
 
 ---
 
-### 3.9.9 Expense_Type
+### 3.6.1.1 Expense_Type
 
 Lookup table for expense classification.
 
@@ -331,11 +410,27 @@ Attributes:
 ## 4. Relationship Summary
 
 - Household (1) → (M) Family
+- Household (1) → (M) Household_Service
+- Household (1) → (1) Dwelling
+
 - Family (1) → (M) Person
-- Person (1) → (1) Child OR Guardian
-- Child (M) ↔ (M) Guardian
+
+- Person (1) → (0..1) Child
+- Person (1) → (0..1) Guardian
+- Person (1) → (M) Economy
+
+- Child (M) ↔ (M) Guardian (via Child_Guardian)
+
 - Child (1) → (M) Health_Record
-- Child (1) → (M) Education_Record
+- Health_Record (1) → (M) Health_Lifestyle
+- Health_Record (1) → (M) Health_Nutrition
+- Health_Record (1) → (M) Health_Record_Disease
+- Health_Record (M) ↔ (M) Disease (via Health_Record_Disease)
+
+- Child (1) → (M) Education
+
+- Economy (1) → (M) Economy_Expense
+- Economy_Expense (1) → (M) Expense_type
 
 ---
 
