@@ -2,8 +2,6 @@
 //Resetting form
 //Populating form for edit
 
-// js/ui/form.js
-
 import { state } from "../state.js";
 import { saveChild } from "../services/child.service.js";
 import { renderTable } from "./table.js";
@@ -25,22 +23,28 @@ export function collectFormData() {
     ph: document.getElementById("c-phone").value,
     em: document.getElementById("c-email").value,
 
-    // --- NEW: Education Record ---
+    // --- Education Record ---
     education: {
       school: document.getElementById("e-school").value,
       year: document.getElementById("e-year").value,
       grade: document.getElementById("e-grade").value,
       status: document.getElementById("e-status").value,
+      performance: document.getElementById("e-performance").value,
+      conduct: document.getElementById("e-conduct").value,
+      socialization: document.getElementById("e-socialization").value,
+      bullying: document.getElementById("e-bullying").value,
+      socialBehavior: document.getElementById("e-social-behavior").value,
+      observation: document.getElementById("e-observation").value,
     },
 
-    // --- NEW: Health Record ---
+    // --- Health Record ---
     health: {
       bloodType: document.getElementById("h-blood").value,
       vaxStatus: document.getElementById("h-vax").value,
       allergies: document.getElementById("h-allergies").value,
     },
 
-    // --- NEW: Household Details ---
+    // --- Household Details ---
     household: {
       occupants: document.getElementById("h-count").value,
       income: document.getElementById("h-income").value,
@@ -211,6 +215,19 @@ export function loadChildIntoForm(index) {
     document.getElementById("e-year").value = child.education.year || "";
     document.getElementById("e-grade").value = child.education.grade || "";
     document.getElementById("e-status").value = child.education.status || "";
+    document.getElementById("e-performance").value =
+      child.education.performance || "";
+    document.getElementById("e-conduct").value = child.education.conduct || "";
+    document.getElementById("e-attendance").value =
+      child.education.attendance || "";
+    document.getElementById("e-socialization").value =
+      child.education.socialization || "";
+    document.getElementById("e-bullying").value =
+      child.education.bullying || "";
+    document.getElementById("e-social-behavior").value =
+      child.education.socialBehavior || "";
+    document.getElementById("e-observation").value =
+      child.education.observation || "";
   }
 
   if (child.health) {
