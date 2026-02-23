@@ -101,43 +101,51 @@ The database is normalized to reduce redundancy and enforce relational integrity
 - Role-based access control
 - Session handling
 
-### 5.2 Household Module
+### 5.2 Household & Infrastructure Modulee
 
 - Household registration
 - Management of multiple families per household
-- Socio-economic data storage
-- Household-level reporting
+- Dwelling & Construction Management
+- Utility & Service Assessment
+- Living Standards Analysis
 
 ### 5.3 Family Module
 
 - Family registration within a household
 - Family surname tracking
 - Association of persons to a family
+- Household association
 - Support for extended family structures
 
-### 5.4 Child Module
+### 5.4 Economy Module
+
+- Income Tracking
+- Expense Management
+- Categorization
+- Financial Analysis
+
+### 5.5 Child Module
 
 - Child profile management
-- Household association
 - Guardian relationship mapping
 
-### 5.5 Guardian Module
+### 5.6 Guardian Module
 
 - Guardian profile registration
 - Child-guardian mapping
 
-### 5.6 Health Module
+### 5.7 Health Module
 
 - Health record tracking
 - BMI calculation service
 - Historical record preservation
 
-### 5.7 Education Module
+### 5.8 Education Module
 
 - Enrollment tracking
 - Academic performance records
 
-### 5.8 Reporting Module
+### 5.9 Reporting Module
 
 - Summary reports
 - Filtered queries
@@ -150,8 +158,13 @@ The database is normalized to reduce redundancy and enforce relational integrity
 The system follows a relational model with the following high-level relationships:
 
 - One Household → Many Families
+- One Household → Many Household Services
+- One Household → One Dwelling
+- One Household → One Household type
+- One Household → One Tenure
 - One Family → Many Persons
 - One Person → One Role (Child or Guardian)
+- One Person → Many economies
 - One Child → Many Health Records
 - One Child → Many Education Records
 - One Child ↔ Many Guardians (via junction table)
