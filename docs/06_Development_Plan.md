@@ -200,6 +200,8 @@ Pattern / Implementation: PDO Wrapper / Config
 
 # 3 Domain Modeling Phase
 
+Test
+
 # 4 Business Logic Phase
 
 # 5 Persistence Phase
