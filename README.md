@@ -26,4 +26,4 @@ The system was architected to support digitalization initiatives in regions wher
 ## ⚙️ Installation & Setup
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/cespejov/mpu-csis.git](https://github.com/cespejov/mpu-csis.git)
+   git clone https://github.com/cespejov/mpu-csis.git
