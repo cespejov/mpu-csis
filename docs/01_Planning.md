@@ -61,11 +61,11 @@ The purpose of this system is to digitalize and centralize child-related socio-e
 
 - HTML5
 - CSS3
-- Vanilla JavaScript (Functional/Modular pattern)
+- Vanilla JavaScript (MVC architectural pattern)
 
 ### Backend
 
-- PHP (Object-Oriented, MVC architecture)
+- PHP (Object-Oriented, MVC architectural pattern)
 
 ### Database
 
